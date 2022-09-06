@@ -1,0 +1,65 @@
+#!/usr/bin/python3.8
+
+
+from easysnmp import Session
+
+class Device:
+        version = 3
+
+        def __init__(self, ip_oob, snmp3_user='cumulus', auth='SHA', priv='AES', sign='cumulus8password', encr='cumulus8encryption'):
+                self.ip = ip_oob
+                self.user = snmp3_user
+                self.auth  = auth
+                self.priv  = priv
+                self.sign = sign
+                self.encr = encr
+                self.level = 'auth_with_privacy'
+
+        def getOid(self, oid):
+                session = Session( \
+                        hostname = self.ip,\
+                        version = self.version,\
+                        security_level = self.level,\
+                        security_username = self.user,\
+                        auth_protocol = self.auth,\
+                        auth_password = self.sign,\
+                        privacy_protocol = self.priv,\
+                        privacy_password = self.encr)
+                return (session.get(oid).value)
+
+
+leaf12=Device('192.168.200.3')
+
+print('\nSNMPv3 testing agent at {} using {} for authentication and {} for encryption'.\
+                format(leaf12.ip, leaf12.auth, leaf12.priv))
+print('Signing:\t {}'.format(leaf12.auth))
+print('Encryption:\t {}'.format(leaf12.priv))
+print('User:\t\t {}\n'.format(leaf12.user))
+
+# sysDesc
+print(leaf12.getOid('1.3.6.1.2.1.1.1.0'))
+#  sysName
+print(leaf12.getOid('1.3.6.1.2.1.1.5.0'))
+# sysLocation
+print(leaf12.getOid('1.3.6.1.2.1.1.6.0'))
+
+leaf12.user = 'cumulus1'
+leaf12.auth = 'MD5'
+leaf12.sign = 'cumulus4password'
+leaf12.priv = 'DES'
+leaf12.encr = 'cumulus4encryption'
+
+
+print('\nSNMPv3 testing agent at {} using {} for authentication and {} for encryption'.\
+                format(leaf12.ip, leaf12.auth, leaf12.priv))
+print('Signing:\t {}'.format(leaf12.auth))
+print('Encryption:\t {}'.format(leaf12.priv))
+print('User:\t\t {}\n'.format(leaf12.user))
+
+
+# sysDesc
+print(leaf12.getOid('1.3.6.1.2.1.1.1.0'))
+#  sysName
+print(leaf12.getOid('1.3.6.1.2.1.1.5.0'))
+# sysLocation
+print(leaf12.getOid('1.3.6.1.2.1.1.6.0'))
