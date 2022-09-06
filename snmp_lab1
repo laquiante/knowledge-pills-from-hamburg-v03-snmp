@@ -1,0 +1,21 @@
+#!/usr/bin/python3.8
+
+
+from easysnmp import Session
+
+leaf11    = '192.168.200.2'
+leaf12    = '192.168.200.3'
+
+oids      = ['SNMPv2-MIB::sysLocation.0',\
+             'SNMPv2-MIB::sysContact.0',\
+             'SNMPv2-MIB::sysDescr.0',\
+             'SNMPv2-MIB::sysName.0']
+
+community  = 'cumulusgeheim'
+# geheim == secret
+
+
+session = Session(hostname = leaf12, version = 1 , community = community)
+
+for oid in oids:
+  print("\n\tSNMP GET for "+oid+" retrieved: "+session.get(oid).value)
